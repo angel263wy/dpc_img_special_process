@@ -55,7 +55,7 @@ class enum_Img_Sequence(Enum):
     sat_910 = 27
     lin_dk20 = 28
     lin_dk80 = 29
-    sat_dk1000 = 30
+    # sat_dk1000 = 30
 
 
 def raw_file_output(fname, raw_data):
@@ -81,7 +81,7 @@ def aperture_process(sl_path, aperture_queue, raw_width, raw_height):
         # 第一部分 导入文件夹 判断文件夹数量
         raw_path = aperture_queue.get()  # 杂光光阑编号 例如5-5 或者 1-4                 
         img_folder = glob.glob(raw_path + '\\*')  # 获取一个光阑下的所有文件夹 存储31个文件夹
-        if len(img_folder) == 31 :
+        if len(img_folder) == 30 :
             print('光阑编号' + raw_path + '  文件夹数量' + str(len(img_folder))+ '  数量正确')
         else:
             print('光阑编号' + raw_path + '  文件夹数量' + str(len(img_folder)) + '  不满足要求')
@@ -98,6 +98,7 @@ def aperture_process(sl_path, aperture_queue, raw_width, raw_height):
                 err = True
         if err:
             return   
+        
         
         # 2.处理最后一层文件夹  img_folder即31个文件夹的列表
         for img_seq, raw_folder in enumerate(img_folder) :
@@ -173,7 +174,7 @@ if __name__ == "__main__":
     raw_width = 1024
     raw_height = 1030
     dn_threhold_ratio = 0.80  # 拼图用的二值化 比例 即最大值的百分比作为阈值 小于该值的为0
-    stray_light_path = 'f:\\sl\\'
+    stray_light_path = 'e:\\sl\\'
     os.chdir(stray_light_path)
     raw_dir = glob.glob('*')
     
