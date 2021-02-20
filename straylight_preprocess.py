@@ -100,7 +100,7 @@ def aperture_process(sl_path, aperture_queue, raw_width, raw_height):
             return   
         
         
-        # 2.处理最后一层文件夹  img_folder即31个文件夹的列表
+        # 2.处理最后一层文件夹  img_folder即30个文件夹的列表
         for img_seq, raw_folder in enumerate(img_folder) :
             filelist = glob.glob(raw_folder + '\\RAW_ImageData\\*.raw')
             
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     raw_width = 1024
     raw_height = 1030
     dn_threhold_ratio = 0.80  # 拼图用的二值化 比例 即最大值的百分比作为阈值 小于该值的为0
-    stray_light_path = 'e:\\sl\\'
+    stray_light_path = 'f:\\sl\\'
     os.chdir(stray_light_path)
     raw_dir = glob.glob('*')
     

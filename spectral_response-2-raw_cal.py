@@ -63,7 +63,7 @@ def spectrum_process(raw_info_dict, wavelength_queue, wavelength_maxDN_queue, dk
         for i, filename in enumerate(filelist):
             raw_data[i] = np.fromfile(filename, dtype=np.uint16)
         # 判断饱和 输出信息        
-        if np.max(raw_data) > 9000 :
+        if np.max(raw_data) > 12000 :
             print(current_wavelength + '波段数据灰度值大于9000 疑似饱和')
         # 求平均值
         img_mean = np.mean(raw_data, axis=0) 
@@ -82,12 +82,14 @@ def spectrum_process(raw_info_dict, wavelength_queue, wavelength_maxDN_queue, dk
         # wavelength_maxDN_queue.put(img_maxdn_dict) 
         
         # 方式三 先找最大值 最大值百分比留下来 再小于灰度值清零
-        img_mean[img_mean < 40] = 0  # 小于30 清零 除去
+        img_mean[img_mean < 50] = 0  # 小于30 清零 除去
         dn_sel = np.max(img_mean) * 0.2
         img_mean[img_mean < dn_sel] = 0  # 小于某一阈值的清零
         img_sum = np.sum(img_mean)  # 所有像素求和
         img_maxdn_dict = {'wavelength':current_wavelength, 'max_dn':img_sum}
         wavelength_maxDN_queue.put(img_maxdn_dict) 
+        
+        
         time.sleep(0.1)
         
         # 输出
@@ -115,12 +117,13 @@ def wavelength_maxDN(raw_info_dict, wavelength_maxDN_queue):
     # 处理最大灰度值队列
     wavelength_maxDN_df = pd.DataFrame()
     while True:
+        time.sleep(0.15)
         max_dict = wavelength_maxDN_queue.get()
         
         if max_dict == None:  # 处理完成标志 
             break   
         # 将字典转df后拼接
-        foo_df = pd.DataFrame(max_dict, index=[0], columns=['wavelength', 'max_dn'])
+        foo_df = pd.DataFrame(max_dict, index=[0], columns=['wavelength', 'DN'])
         wavelength_maxDN_df = pd.concat([wavelength_maxDN_df, foo_df], axis=0)
     
     # 排序后输出
@@ -130,15 +133,17 @@ def wavelength_maxDN(raw_info_dict, wavelength_maxDN_queue):
     os.chdir('..')
     wavelength_maxDN_df.to_csv(fout, header=True, index=False, encoding='gbk')  
     print('图像最大值统计文件输出 文件名为' + fout) 
+    # 打开文件
+    os.system('start'+ ' ' + fout)    
         
 
 if __name__ == "__main__":
     # 图像信息字典
-    raw_info_dict = {'raw_width':512,
-                    'raw_height':380,
-                    'spectral_path': 'e:\\sl\\443',
-                    'channel_name': '443',
-                    'Start_wavelength': 423}
+    raw_info_dict = {'raw_width':1024,
+                    'raw_height':1030,
+                    'spectral_path': 'e:\\sl\\670P3',
+                    'channel_name': '670',
+                    'Start_wavelength': 648}
 
     os.chdir(raw_info_dict['spectral_path'])
     
